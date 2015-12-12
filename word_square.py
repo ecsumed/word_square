@@ -4,10 +4,8 @@ from treelib import Tree
 WORDS_FILE = 'words.txt'
 
 tree = Tree()
-squares = []
 word = ''
 word_len = None
-
 square_found = None
 
 
@@ -52,11 +50,13 @@ def make_tree(letter, first, index):
                      for node in tree.expand_tree(mode=Tree.DEPTH)]
 
             for node in nodes:
-                if tree.depth(node) == (index):
+                if tree.depth(node) == index:
                     path = get_path(node)
                     match_str = make_regex(path, index)
 
-                    sub_tree = word_match(WORDS_FILE, match_str, word_len)
+                    # sub_tree = word_match(WORDS_FILE, match_str, word_len)
+                    sub_tree = [word for word in words
+                                if word.startswith(match_str)]
 
                     if sub_tree:
                         for child_node in sub_tree:
@@ -76,6 +76,25 @@ def make_tree(letter, first, index):
 
 
 def make_regex(path, index):
+    """
+        Creates a regex from the tree path, so that the child  nodes can contain
+        that pattern.
+        Example tree:
+            dog
+            I-- out
+            I-- one
+            I-- orc
+
+        INPUT:
+            path = ['dog', 'out']
+            index = 2
+
+        OUTPUT:
+            'gt'
+
+    """
+    # Index of the next letter in the word being processed.
+    # Increment because root was not counted
     index += 1
 
     if len(path) > index:
@@ -90,7 +109,7 @@ def make_regex(path, index):
 def get_path(node):
     """
         Returns the path to the specified node.
-        Ex.
+        Example Tree:
             root
             I-- a1
             I-- b1
@@ -107,12 +126,44 @@ def get_path(node):
             return path
 
 
-def pretty_print(word_square):
+def pretty_str(word_square):
     """
-        Pretty prints the word square.
+        Returns a visually pleasing string of the square.
     """
+    print_str = ''
     for word in word_square:
-        print ' '.join(list(word))
+        print_str += ' '.join(list(word)) + '\n'
+
+    return print_str
+
+
+def word_square(word):
+    """
+        Given a word, will attempt to create a square.
+
+        INPUT:
+            'dog'
+
+        OUTPUT:
+            d o g
+            o a r
+            g r a
+    """
+    tree.create_node(word, word)  # root node
+
+    first = True
+    for index, letter in enumerate(list(word[1:])):
+        make_tree(letter, first, index)
+
+        if square_found:
+            break
+
+        first = False
+
+    if square_found:
+        return pretty_str(get_path(square_found))
+    else:
+        return 'No square found'
 
 
 def main():
@@ -123,22 +174,8 @@ def main():
     word = raw_input("Enter the word: ")
     word_len = len(word)
 
-    tree.create_node(word, word)  # root node
+    print word_square(word)
 
-    first = True
-    for index, letter in enumerate(list(word[1:])):
-        make_tree(letter, first, index)
-        # print tree.show()
-
-        if square_found:
-            break
-
-        first = False
-
-    if square_found:
-        pretty_print(get_path(square_found))
-    else:
-        print 'No square found'
 
 if __name__ == '__main__':
     main()
