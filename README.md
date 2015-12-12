@@ -22,7 +22,7 @@ OUTPUT:
     
 INPUT:
 
-    'cat'
+    'self'
 
 OUTPUT:
 
