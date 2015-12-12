@@ -1,7 +1,7 @@
 import treelib
 from treelib import Tree
 
-WORDS_FILE = 'words'
+WORDS_FILE = 'words.txt'
 
 tree = Tree()
 squares = []
